@@ -1,0 +1,11 @@
+<h1>A list of restaurants!</h1>
+<ul>
+  @for (item of restaurantData; track item.id) {
+  <li>
+    <h2>
+      {{ item.attributes.name }}
+    </h2>
+    <p>{{ item.attributes.description }}</p>
+  </li>
+  }
+</ul>
