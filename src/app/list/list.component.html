@@ -6,6 +6,15 @@
       {{ item.attributes.name }}
     </h2>
     <p>{{ item.attributes.description }}</p>
+    @if (item.attributes.reviews && item.attributes.reviews.data.length > 0) {
+    <ul>
+      @for(review of item.attributes.reviews.data; track review.id) {
+      <li>{{ review.attributes.description }}</li>
+      }
+    </ul>
+    } @else {
+    <p>No reviews yet!</p>
+    }
   </li>
   }
 </ul>

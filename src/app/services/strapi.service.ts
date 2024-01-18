@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../environments/environment';
-import { timeout } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, switchMap } from 'rxjs';
 import { DataType } from '../types/TypeData';
 
 @Injectable({
@@ -10,21 +10,32 @@ import { DataType } from '../types/TypeData';
 export class StrapiService {
   private http = inject(HttpClient);
 
-  strapiData$ = this.http
-    .get<DataType>(`${environment.strapiUrl}/restaurants`)
-    .pipe(timeout(10000));
+  subject = new BehaviorSubject<any>({
+    pageSize: 3,
+    currentPage: 1,
+  });
 
-  // fetchStrapiData(): Promise<any> {
-  //   return fetch(`${environment.strapiUrl}/restaurants`)
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-  //       return response.json();
-  //     })
-  //     .catch((error) => {
-  //       console.error('Fetch error:', error);
-  //       throw error;
-  //     });
-  // }
+  strapiData$ = this.subject
+    .asObservable()
+    .pipe(
+      switchMap((params) =>
+        this.http.get<DataType>(
+          `${environment.strapiUrl}/restaurants?pagination[page]=${params.currentPage}&pagination[pageSize]=${params.pageSize}&populate=*`
+        )
+      )
+    );
+
+  nextPage(): void {
+    this.subject.next({
+      ...this.subject.value,
+      currentPage: this.subject.value.currentPage + 1,
+    });
+  }
+
+  previousPage(): void {
+    this.subject.next({
+      ...this.subject.value,
+      currentPage: this.subject.value.currentPage - 1,
+    });
+  }
 }

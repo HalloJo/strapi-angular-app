@@ -19,10 +19,21 @@ export interface Data {
   attributes: Attributes;
 }
 
+export interface Review {
+  id: number;
+  attributes: {
+    reviewer: string;
+    description: string;
+  };
+}
+
 export interface Attributes {
   name: string;
   description: string;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  reviews: {
+    data: Review[];
+  };
 }
